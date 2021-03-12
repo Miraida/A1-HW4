@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">A1-HW4</string>
+    <string name="userProfilePhoto">user prifle photo</string>
+    <string name="addButton">+</string>
+    <string name="enter_phone">Enter phone</string>
+    <string name="enter_name">Enter name</string>
+    <string name="add_button">"add "</string>
+    <string name="delete">delete</string>
+    <string name="call">call</string>
+    <string name="_0_555_17_12_21">0(555)-17-12-21</string>
+</resources>
