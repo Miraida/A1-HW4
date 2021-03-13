@@ -7,6 +7,7 @@
     android:background="@drawable/rounded_edit_text"
     android:paddingTop="5dp"
     android:paddingBottom="5dp"
+    android:backgroundTint="#E6E6E6"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
         android:layout_width="70dp"

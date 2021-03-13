@@ -3,11 +3,16 @@ package com.geek.a1_hw4;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -16,10 +21,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.geek.a1_hw4.R.id.position;
+
 public class MainActivity extends AppCompatActivity implements MainAdapter.ItemClickListener {
      MainAdapter adapter;
      RecyclerView recyclerView;
      List<UserContactModel> list;
+
     private int positionOnItemClick;
 
     @Override
@@ -89,4 +97,16 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
            adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
         }
     };
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 1){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                new MainAdapter(this,list).makePhoneCall();
+            }
+        }
+    }
 }

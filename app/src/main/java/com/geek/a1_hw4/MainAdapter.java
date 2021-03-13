@@ -1,9 +1,13 @@
 package com.geek.a1_hw4;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +32,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     public Context context;
     public List<UserContactModel> list;
     ItemClickListener listener;
+    public static int positionInCall;
     public MainAdapter(Context context, List<UserContactModel> list) {
         this.context = context;
         this.list = list;
@@ -43,7 +49,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     public void onBindViewHolder(@NonNull MainViewHolder holder, int position) {
           holder.onBind(list.get(position));
           holder.menuImageView.setOnClickListener(v -> {
-
+              positionInCall = position;
               PopupMenu popupMenu = new PopupMenu(context,holder.menuImageView);
                popupMenu.inflate(menu.recycler_menu);
                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -56,18 +62,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                                notifyItemRangeChanged(position, getItemCount());
                                break;
                            case callMenu:
-                               String number = list.get(position).getPhone();
-                               if (!number.equals("")) {
-//                                   Intent call = new Intent(Intent.ACTION_CALL);
-//                                   call.setData(Uri.parse("tel:"+number));
-//                                   if(ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-//                                      break;
-//                                   }
-//                                   context.startActivity(call);
-
-                                   context.startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null)));
-                               } else Toast.makeText(context,"You don't add phone number!",Toast.LENGTH_LONG).show();
-
+                              makePhoneCall();
                                break;
                        }
                        return false;
@@ -77,12 +72,26 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
           });
 
     }
-
     @Override
     public int getItemCount() {
         return list.size();
     }
-
+    public  void makePhoneCall(){
+        String number = list.get(MainAdapter.positionInCall).getPhone();
+        if (number.trim().length() > 0){
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CALL_PHONE},1);
+            }
+            else {
+                String dial = "tel:"+number;
+                context.startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+            }
+        }
+        else {Toast toast = Toast.makeText(context,"Please add phone number!", Toast.LENGTH_LONG);
+             toast.setGravity(Gravity.TOP,0,20);
+             toast.show();
+        }
+    }
     public class MainViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
           private final TextView textViewName;
           private final TextView textViewPhone;
@@ -116,6 +125,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                     }
         }
 
+
         @Override
         public void onClick(View v) {
              if (listener != null){ listener.onItemClick(getAdapterPosition()); }
@@ -125,4 +135,5 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
    public interface ItemClickListener{
         void onItemClick(int position);
    }
+
 }
